@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌡️ Daikin</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: white;
+    }
+
+    .container {
+      max-width: 400px;
+      margin: 0 auto;
+      padding-bottom: 80px;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+
+    .setup-screen {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      border-radius: 20px;
+      padding: 24px;
+      min-height: 100vh;
+    }
+
+    .setup-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .setup-desc {
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 24px;
+      font-size: 14px;
+    }
+
+    .info-box {
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid #3b82f6;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 24px;
+      font-size: 13px;
+      color: #93c5fd;
+      line-height: 1.6;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: rgba(255, 255, 255, 0.8);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      background: #0f172a;
+      color: white;
+      font-size: 14px;
+      font-family: monospace;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .setup-btn {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 24px;
+    }
+
+    .setup-btn:active {
+      transform: scale(0.98);
+    }
+
+    .setup-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .error-message {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid #ef4444;
+      border-radius: 8px;
+      padding: 12px;
+      color: #fca5a5;
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+
+    .main-card {
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 16px;
+      transition: all 0.3s ease;
+      box-shadow: 0 20px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .main-card.off {
+      background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+    }
+
+    .main-card.cool {
+      background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+    }
+
+    .main-card.heat {
+      background: linear-gradient(135deg, #ef4444 0%, #991b1b 100%);
+    }
+
+    .main-card.dry {
+      background: linear-gradient(135deg, #06b6d4 0%, #0369a1 100%);
+    }
+
+    .main-card.fan {
+      background: linear-gradient(135deg, #6b7280 0%, #374151 100%);
+    }
+
+    .main-card.auto {
+      background: linear-gradient(135deg, #22c55e 0%, #166534 100%);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 24px;
+    }
+
+    .temp-display {
+      font-size: 48px;
+      font-weight: bold;
+    }
+
+    .temp-label {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .power-btn {
+      width: 60px;
+      height: 60px;
+      border: none;
+      border-radius: 50%;
+      font-size: 28px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+
+    .power-btn:active {
+      transform: scale(0.95);
+    }
+
+    .power-btn.on:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .power-btn.off {
+      background: #ef4444;
+    }
+
+    .power-btn.off:hover {
+      background: #dc2626;
+    }
+
+    .mode-label {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    .temp-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 16px;
+    }
+
+    .temp-btn {
+      width: 48px;
+      height: 48px;
+      border: none;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .temp-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .temp-btn:active {
+      transform: scale(0.95);
+    }
+
+    .temp-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .presets {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .preset-btn {
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .preset-btn:active {
+      transform: scale(0.95);
+    }
+
+    .casa {
+      background: #9333ea;
+    }
+
+    .casa:hover {
+      background: #7e22ce;
+    }
+
+    .sleep {
+      background: #4f46e5;
+    }
+
+    .sleep:hover {
+      background: #4338ca;
+    }
+
+    .standby {
+      background: #22c55e;
+    }
+
+    .standby:hover {
+      background: #16a34a;
+    }
+
+    .off-btn {
+      background: #475569;
+    }
+
+    .off-btn:hover {
+      background: #334155;
+    }
+
+    .panel {
+      background: #1e293b;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .panel-label {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .mode-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+    }
+
+    .mode-btn {
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: #334155;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .mode-btn:hover {
+      background: #475569;
+    }
+
+    .mode-btn.active {
+      background: white;
+      color: #1e293b;
+      font-weight: bold;
+    }
+
+    .mode-btn:active {
+      transform: scale(0.95);
+    }
+
+    .fan-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .fan-btn {
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: #334155;
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .fan-btn:hover {
+      background: #475569;
+    }
+
+    .fan-btn.active {
+      background: white;
+      color: #1e293b;
+    }
+
+    .fan-btn:active {
+      transform: scale(0.95);
+    }
+
+    .swing-btn {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 8px;
+      background: #334155;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s;
+    }
+
+    .swing-btn:hover {
+      background: #475569;
+    }
+
+    .swing-btn.active {
+      background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+    }
+
+    .swing-btn:active {
+      transform: scale(0.98);
+    }
+
+    .status-message {
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid #22c55e;
+      border-radius: 8px;
+      padding: 12px;
+      color: #86efac;
+      font-size: 13px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .status-message.error {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: #ef4444;
+      color: #fca5a5;
+    }
+
+    .loading {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .visible {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="setupScreen" class="setup-screen">
+      <h2 class="setup-title">🌡️ Daikin</h2>
+      <p class="setup-desc">Configurazione Device ID</p>
+
+      <div class="info-box">
+        <strong>ℹ️ Device ID:</strong> Lo trovi in SmartLife → IR Blaster → Impostazioni → Device ID
+      </div>
+
+      <div id="setupError" class="error-message hidden"></div>
+
+      <div class="form-group">
+        <label class="form-label">Device ID IR Blaster</label>
+        <input type="text" id="deviceId" placeholder="bf9a2afef777c5e330aajy" value="bf9a2afef777c5e330aajy">
+      </div>
+
+      <button class="setup-btn" onclick="saveDeviceId()">Salva e Continua</button>
+    </div>
+
+    <div id="appScreen" class="hidden">
+      <h1>🌡️ Daikin</h1>
+      <p class="subtitle">Controllo climatizzatore</p>
+
+      <div id="statusMessage" class="status-message hidden"></div>
+
+      <div class="main-card off" id="mainCard">
+        <div class="card-header">
+          <div>
+            <p class="temp-label">Stato</p>
+            <p class="temp-display" id="tempDisplay">OFF</p>
+          </div>
+          <button class="power-btn off" id="powerBtn" onclick="togglePower()">⏻</button>
+        </div>
+
+        <div class="hidden" id="tempSection">
+          <p class="mode-label">Modalità: <span id="modeNameDisplay">-</span></p>
+          <div class="temp-controls">
+            <button class="temp-btn" onclick="changeTemp(-1)">−</button>
+            <span class="temp-display" id="tempValue">24</span>
+            <button class="temp-btn" onclick="changeTemp(1)">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="presets">
+        <button class="preset-btn casa" onclick="preset('casa')">🏠 Casa</button>
+        <button class="preset-btn sleep" onclick="preset('sleep')">😴 Sleep</button>
+        <button class="preset-btn standby" onclick="preset('standby')">🔄 Auto</button>
+        <button class="preset-btn off-btn" onclick="preset('off')">⏼ Off</button>
+      </div>
+
+      <div class="panel hidden" id="modePanel">
+        <p class="panel-label">Modalità</p>
+        <div class="mode-grid">
+          <button class="mode-btn active" onclick="setMode('cool')">❄️</button>
+          <button class="mode-btn" onclick="setMode('heat')">🔥</button>
+          <button class="mode-btn" onclick="setMode('dry')">💧</button>
+          <button class="mode-btn" onclick="setMode('fan')">💨</button>
+          <button class="mode-btn" onclick="setMode('auto')">🔄</button>
+        </div>
+      </div>
+
+      <div class="panel hidden" id="fanPanel">
+        <p class="panel-label">💨 Velocità ventola</p>
+        <div class="fan-grid">
+          <button class="fan-btn active" onclick="setFan('auto')">Auto</button>
+          <button class="fan-btn" onclick="setFan('1')">V1</button>
+          <button class="fan-btn" onclick="setFan('2')">V2</button>
+          <button class="fan-btn" onclick="setFan('3')">V3</button>
+          <button class="fan-btn" onclick="setFan('4')">V4</button>
+          <button class="fan-btn" onclick="setFan('5')">V5</button>
+        </div>
+      </div>
+
+      <div class="panel hidden" id="swingPanel">
+        <button class="swing-btn" id="swingBtn" onclick="toggleSwing()">
+          <span>💧 Oscillazione</span>
+          <span id="swingStatus">✗</span>
+        </button>
+      </div>
+
+      <button class="preset-btn off-btn" style="width: 100%; margin-top: 24px;" onclick="resetDeviceId()">⚙️ Modifica Device ID</button>
+    </div>
+  </div>
+
+  <script>
+    let state = {
+      isOn: false,
+      temperature: 24,
+      mode: 'cool',
+      fanSpeed: 'auto',
+      swing: false
+    };
+
+    let deviceId = '';
+
+    const modes = {
+      cool: { name: 'Raffreddamento', color: 'cool' },
+      heat: { name: 'Riscaldamento', color: 'heat' },
+      dry: { name: 'Deumidificazione', color: 'dry' },
+      fan: { name: 'Ventilazione', color: 'fan' },
+      auto: { name: 'Auto', color: 'auto' }
+    };
+
+    function loadDeviceId() {
+      const saved = localStorage.getItem('daikin_device_id');
+      if (saved) {
+        deviceId = saved;
+        document.getElementById('setupScreen').classList.add('hidden');
+        document.getElementById('appScreen').classList.remove('hidden');
+        updateUI();
+        return true;
+      }
+      return false;
+    }
+
+    function saveDeviceId() {
+      const id = document.getElementById('deviceId').value.trim();
+      const errorDiv = document.getElementById('setupError');
+
+      if (!id) {
+        errorDiv.textContent = '❌ Device ID è obbligatorio!';
+        errorDiv.classList.remove('hidden');
+        return;
+      }
+
+      deviceId = id;
+      localStorage.setItem('daikin_device_id', id);
+
+      document.getElementById('setupScreen').classList.add('hidden');
+      document.getElementById('appScreen').classList.remove('hidden');
+      updateUI();
+    }
+
+    function resetDeviceId() {
+      localStorage.removeItem('daikin_device_id');
+      location.reload();
+    }
+
+    async function sendCommand(command, value) {
+      try {
+        document.getElementById('mainCard').classList.add('loading');
+        
+        const response = await fetch('/.netlify/functions/tuya-command', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            device_id: deviceId,
+            command: command,
+            value: value
+          })
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+          showStatus('✓ Comando inviato', false);
+          return true;
+        } else {
+          showStatus('✗ Errore: ' + (data.error || 'Sconosciuto'), true);
+          return false;
+        }
+      } catch (error) {
+        showStatus('✗ Errore connessione', true);
+        console.error(error);
+        return false;
+      } finally {
+        document.getElementById('mainCard').classList.remove('loading');
+      }
+    }
+
+    function showStatus(message, isError = false) {
+      const div = document.getElementById('statusMessage');
+      div.textContent = message;
+      div.className = 'status-message' + (isError ? ' error' : '');
+      div.classList.remove('hidden');
+      setTimeout(() => div.classList.add('hidden'), 3000);
+    }
+
+    function updateUI() {
+      const card = document.getElementById('mainCard');
+      const tempDisplay = document.getElementById('tempDisplay');
+      const tempSection = document.getElementById('tempSection');
+      const modePanel = document.getElementById('modePanel');
+      const fanPanel = document.getElementById('fanPanel');
+      const swingPanel = document.getElementById('swingPanel');
+      const powerBtn = document.getElementById('powerBtn');
+      const tempValue = document.getElementById('tempValue');
+      const modeNameDisplay = document.getElementById('modeNameDisplay');
+
+      card.className = 'main-card ' + (state.isOn ? state.mode : 'off');
+      
+      if (state.isOn) {
+        powerBtn.className = 'power-btn on';
+      } else {
+        powerBtn.className = 'power-btn off';
+      }
+
+      if (state.isOn) {
+        tempDisplay.textContent = state.temperature + '°';
+        modeNameDisplay.textContent = modes[state.mode].name;
+      } else {
+        tempDisplay.textContent = 'OFF';
+      }
+
+      tempSection.className = state.isOn ? 'visible' : 'hidden';
+      modePanel.className = 'panel ' + (state.isOn ? 'visible' : 'hidden');
+      fanPanel.className = 'panel ' + (state.isOn ? 'visible' : 'hidden');
+      swingPanel.className = 'panel ' + (state.isOn ? 'visible' : 'hidden');
+
+      tempValue.textContent = state.temperature;
+
+      document.querySelectorAll('.mode-btn').forEach((btn, i) => {
+        const modes_array = ['cool', 'heat', 'dry', 'fan', 'auto'];
+        btn.className = 'mode-btn' + (modes_array[i] === state.mode ? ' active' : '');
+      });
+
+      document.querySelectorAll('.fan-btn').forEach((btn, i) => {
+        const fans = ['auto', '1', '2', '3', '4', '5'];
+        btn.className = 'fan-btn' + (fans[i] === state.fanSpeed ? ' active' : '');
+      });
+
+      const swingBtn = document.getElementById('swingBtn');
+      const swingStatus = document.getElementById('swingStatus');
+      swingBtn.className = 'swing-btn' + (state.swing ? ' active' : '');
+      swingStatus.textContent = state.swing ? '✓' : '✗';
+    }
+
+    async function togglePower() {
+      const newState = !state.isOn;
+      const success = await sendCommand('switch', newState);
+      if (success) {
+        state.isOn = newState;
+        updateUI();
+      }
+    }
+
+    async function changeTemp(delta) {
+      const newTemp = Math.max(16, Math.min(32, state.temperature + delta));
+      const success = await sendCommand('temp_set', newTemp);
+      if (success) {
+        state.temperature = newTemp;
+        updateUI();
+      }
+    }
+
+    async function setMode(mode) {
+      let tuyaMode = mode;
+      if (mode === 'fan') tuyaMode = 'wind';
+      
+      const success = await sendCommand('mode', tuyaMode);
+      if (success) {
+        state.mode = mode;
+        updateUI();
+      }
+    }
+
+    async function setFan(speed) {
+      const success = await sendCommand('fan_level', speed);
+      if (success) {
+        state.fanSpeed = speed;
+        updateUI();
+      }
+    }
+
+    async function toggleSwing() {
+      const newSwing = !state.swing;
+      const success = await sendCommand('swing', newSwing);
+      if (success) {
+        state.swing = newSwing;
+        updateUI();
+      }
+    }
+
+    async function preset(name) {
+      let commands = [];
+      
+      if (name === 'casa') {
+        state.isOn = true;
+        state.temperature = 24;
+        state.mode = 'cool';
+        state.fanSpeed = '2';
+        state.swing = false;
+        commands = [
+          { cmd: 'switch', val: true },
+          { cmd: 'temp_set', val: 24 },
+          { cmd: 'mode', val: 'cool' },
+          { cmd: 'fan_level', val: '2' },
+          { cmd: 'swing', val: false }
+        ];
+      } else if (name === 'sleep') {
+        state.isOn = true;
+        state.temperature = 26;
+        state.mode = 'cool';
+        state.fanSpeed = '1';
+        state.swing = false;
+        commands = [
+          { cmd: 'switch', val: true },
+          { cmd: 'temp_set', val: 26 },
+          { cmd: 'mode', val: 'cool' },
+          { cmd: 'fan_level', val: '1' }
+        ];
+      } else if (name === 'standby') {
+        state.isOn = true;
+        state.mode = 'auto';
+        state.fanSpeed = 'auto';
+        state.swing = false;
+        commands = [
+          { cmd: 'switch', val: true },
+          { cmd: 'mode', val: 'auto' },
+          { cmd: 'fan_level', val: 'auto' }
+        ];
+      } else if (name === 'off') {
+        state.isOn = false;
+        commands = [{ cmd: 'switch', val: false }];
+      }
+
+      for (const cmd of commands) {
+        let code = cmd.cmd;
+        if (cmd.cmd === 'switch') code = 'switch';
+        else if (cmd.cmd === 'temp_set') code = 'temp_set';
+        else if (cmd.cmd === 'mode') code = 'mode';
+        else if (cmd.cmd === 'fan_level') code = 'fan_level';
+        else if (cmd.cmd === 'swing') code = 'swing';
+        
+        await sendCommand(code, cmd.val);
+      }
+
+      updateUI();
+    }
+
+    loadDeviceId();
+  </script>
+</body>
+</html>
