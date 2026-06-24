@@ -1,2 +1,2 @@
 # Daikin-app
-Remote control 
+Daikin controller app
